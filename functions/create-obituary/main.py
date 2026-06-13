@@ -21,7 +21,7 @@ ssm = boto3.client("ssm")
 table = dynamodb.Table(os.environ["OBITUARIES_TABLE"])
 
 SSM_PARAMETER_PATH = os.environ.get("SSM_PARAMETER_PATH", "/last-show/")
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 POLLY_VOICE_ID = os.environ.get("POLLY_VOICE_ID", "Joanna")
 CLOUDINARY_FOLDER = os.environ.get("CLOUDINARY_FOLDER", "last-show")
 
@@ -30,9 +30,6 @@ def response(status_code, body):
     return {
         "statusCode": status_code,
         "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "content-type",
-            "Access-Control-Allow-Methods": "POST,OPTIONS",
             "Content-Type": "application/json",
         },
         "body": json.dumps(body),
@@ -54,22 +51,33 @@ def lambda_handler(event, context):
         if not picture:
             return response(400, {"message": "Picture is required"})
 
-        secrets = get_secrets()
+        secrets = run_step("read secrets from SSM", get_secrets)
         item_id = str(uuid.uuid4())
         born_year = born[:4]
         died_year = died[:4]
 
-        obituary = generate_obituary(secrets["openai_api_key"], name, born_year, died_year)
-        audio_bytes = synthesize_obituary(obituary)
+        obituary = run_step(
+            "generate obituary with OpenAI",
+            generate_obituary,
+            secrets["openai_api_key"],
+            name,
+            born_year,
+            died_year,
+        )
+        audio_bytes = run_step("synthesize speech with Polly", synthesize_obituary, obituary)
 
-        image_upload = upload_to_cloudinary(
+        image_upload = run_step(
+            "upload image to Cloudinary",
+            upload_to_cloudinary,
             secrets=secrets,
             resource_type="image",
             file_bytes=picture["content"],
             filename=picture["filename"] or f"{item_id}.jpg",
             public_id=f"{item_id}-portrait",
         )
-        audio_upload = upload_to_cloudinary(
+        audio_upload = run_step(
+            "upload audio to Cloudinary",
+            upload_to_cloudinary,
             secrets=secrets,
             resource_type="video",
             file_bytes=audio_bytes,
@@ -89,13 +97,20 @@ def lambda_handler(event, context):
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        table.put_item(Item=item)
+        run_step("save obituary to DynamoDB", table.put_item, Item=item)
         return response(201, item)
     except ValueError as error:
         return response(400, {"message": str(error)})
     except Exception as error:
         print(f"Failed to create obituary: {error}")
-        return response(500, {"message": "Could not create obituary"})
+        return response(500, {"message": str(error)})
+
+
+def run_step(label, function, *args, **kwargs):
+    try:
+        return function(*args, **kwargs)
+    except Exception as error:
+        raise RuntimeError(f"Failed to {label}: {error}") from error
 
 
 def parse_request(event):

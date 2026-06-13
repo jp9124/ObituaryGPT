@@ -7,7 +7,7 @@ const emptyForm = {
   picture: null,
 };
 
-function NewObituaryModal({ isSubmitting, onClose, onSubmit }) {
+function NewObituaryModal({ error, isSubmitting, onClose, onSubmit }) {
   const [form, setForm] = useState(emptyForm);
 
   const updateField = (event) => {
@@ -44,7 +44,12 @@ function NewObituaryModal({ isSubmitting, onClose, onSubmit }) {
           x
         </button>
         <h2>Create a New Obituary</h2>
-        <p className="modal-subtitle">Flowers</p>
+        <div
+          className="floral-underline"
+          style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/floral-underline.png)` }}
+          aria-hidden="true"
+        />
+        {error && <p className="form-error">{error}</p>}
 
         <label>
           <span>Name:</span>

@@ -35,7 +35,7 @@ variable "ssm_parameter_path" {
 variable "openai_model" {
   type        = string
   description = "OpenAI model used by the create-obituary Lambda."
-  default     = "gpt-5.5"
+  default     = "gpt-4o-mini"
 }
 
 variable "polly_voice_id" {

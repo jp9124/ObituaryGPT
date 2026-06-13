@@ -4,7 +4,7 @@ ucid = "jungp"
 # ssm_parameter_path = "/last-show/jungp/"
 
 # Optional. Pick a lower-cost compatible model if needed.
-# openai_model = "gpt-5.5"
+# openai_model = "gpt-4o-mini"
 
 # Optional. README demo uses Joanna.
 # polly_voice_id = "Joanna"

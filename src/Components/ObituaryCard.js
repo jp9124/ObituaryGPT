@@ -1,4 +1,5 @@
 import { formatDate } from '../utils/date';
+import AudioPlayButton from './AudioPlayButton';
 
 function ObituaryCard({ person, isExpanded, onToggle }) {
   return (
@@ -20,11 +21,7 @@ function ObituaryCard({ person, isExpanded, onToggle }) {
         {isExpanded && (
           <div className="obituary-details">
             <p>{person.obituary}</p>
-            {person.audio && (
-              <audio controls src={person.audio}>
-                Your browser does not support audio playback.
-              </audio>
-            )}
+            <AudioPlayButton audioUrl={person.audio} />
           </div>
         )}
       </div>

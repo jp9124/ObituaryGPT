@@ -4,7 +4,7 @@ function Header({ onOpenModal }) {
       <button className="new-obituary-button" onClick={onOpenModal}>
         + New Obituary
       </button>
-      <h1>The Last Show</h1>
+      <h1>ObituaryGPT</h1>
     </header>
   );
 }

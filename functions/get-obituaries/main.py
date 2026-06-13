@@ -13,9 +13,6 @@ def response(status_code, body):
     return {
         "statusCode": status_code,
         "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "content-type",
-            "Access-Control-Allow-Methods": "GET,OPTIONS",
             "Content-Type": "application/json",
         },
         "body": json.dumps(body, default=encode_dynamodb),
