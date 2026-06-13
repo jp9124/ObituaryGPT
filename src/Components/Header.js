@@ -1,13 +1,12 @@
-import React from 'react'
-import "./Header.css"
-const Header = () => {
+function Header({ onOpenModal }) {
   return (
-    <div className="Header">
-        <div className="cooldiv"></div>
-        <h2>The Last Show</h2>
-        <button>+ New Obituary</button>
-    </div>
-  )
+    <header className="site-header">
+      <button className="new-obituary-button" onClick={onOpenModal}>
+        + New Obituary
+      </button>
+      <h1>The Last Show</h1>
+    </header>
+  );
 }
 
-export default Header
+export default Header;
