@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import Header from './components/Header';
-import NewObituaryModal from './components/NewObituaryModal';
-import ObituaryGrid from './components/ObituaryGrid';
+import Header from './Components/Header';
+import NewObituaryModal from './Components/NewObituaryModal';
+import ObituaryGrid from './Components/ObituaryGrid';
 import { normalizeObituary } from './utils/obituaries';
 
 const GET_OBITUARIES_URL = process.env.REACT_APP_GET_OBITUARIES_URL;
